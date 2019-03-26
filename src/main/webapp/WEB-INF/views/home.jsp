@@ -67,6 +67,6 @@
 	<a href="filedown?dir=C://Users//김님//Desktop//kcj&fileName=pagecss.txt">pagecss</a>
 	<a href="javascript:download('pagecss.txt')">pagecss</a>
 	<a href="javascript:download('새 텍스트 문서.txt')">새 텍스트 문서</a>
-	yeah~ yo~ ing~ ya~ please~ kcj~ 가나요~ 이번엔 진짜다~
+	yeah~ yo~ ing~ ya~ please~ kcj~ 가나요~ 이번엔 진짜다~ 아닌가봐 계속 아니네
 </body>
 </html>
