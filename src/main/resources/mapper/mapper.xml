@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper">
+
+	<resultMap type="map" id="mapList">
+
+		<result column="seq" property="seq" />
+
+		<result column="mem_id" property="memId" />
+
+		<result column="mem_name" property="memName" />
+
+		<result column="board_subject" property="boardSubject" />
+
+		<result column="board_content" property="boardContent" />
+
+		<result column="reg_date" property="regDate" />
+
+		<result column="upt_date" property="uptDate" />
+
+		<result column="view_cnt" property="viewCnt" />
+
+	</resultMap>
+
+	
+
+	<!-- 검색조건 -->
+
+	<sql id="listOption">
+
+		<if test="searchType != null and searchType != '전체' and searchType != ''">
+
+			<choose>
+
+				<when test="searchType == '제목'">
+
+					and board_subject
+
+				</when>
+
+				<when test="searchType == '내용'">
+
+					and board_content
+
+				</when>
+
+				<when test="searchType == '작성자'">
+
+						and mem_name
+
+				</when>
+
+			</choose>
+
+				like '%'||#{searchValue} ||'%'						
+
+		</if>	
+
+		<if test="stDate != null and endDate != null and stDate != '' and endDate != ''">  <!-- stDate 가  Map 안에 있고  그값이 null어야 stDate != null 성립된다. -->
+
+			and to_char(reg_date,'yyyy-mm-dd') between #{stDate} and #{endDate}
+
+		</if>
+
+	</sql>
+
+
+
+
+	<!-- 검색  조건에 맞는 게시물의 수  -->
+
+	<select id="getTotalCount" resultType="int" parameterType="map">
+
+		select 
+
+			count(*) 			
+
+		from board_study
+
+		where 1=1
+
+		<include refid="listOption"></include>					
+
+	</select>
+
+
+
+
+	<!-- 조건에 맞는 게시물 검색 -->
+
+	<select id="list" resultMap="mapList">
+
+		select * from
+
+			(select 
+
+				rownum rnum, 
+
+				a.*
+
+			from
+
+				(select
+
+					seq,
+
+					mem_id,
+
+					mem_name,
+
+					board_subject,
+
+					board_content,
+
+					reg_date,
+
+					upt_date,
+
+					view_cnt
+
+				from board_study
+
+				where 1=1
+
+				<include refid="listOption"></include>		
+
+				order by reg_date desc) a)
+
+		where rnum between #{begin} and #{end}		
+
+	</select>
+
+
+
+
+	<!-- 게시물 선택 -->
+
+	<select id="select" parameterType="map" resultMap="mapList">
+
+		select
+
+			seq,
+
+			mem_id,
+
+			mem_name,
+
+			board_subject,
+
+			board_content,
+
+			reg_date,
+
+			view_cnt
+
+			from board_study 
+
+		where seq = #{seq}
+
+	</select>
+
+
+
+
+	<!-- 게시물 등록 -->
+
+	<insert id="insert" parameterType="map">
+
+		insert into board_study (seq, mem_id, mem_name, board_subject,board_content,
+
+		reg_date, view_cnt)
+
+		values((select (decode(max(a.seq),null,0,max(a.seq))+1)from board_study a),
+
+		#{id},#{name}, #{subject}, #{content}, sysdate, 0)
+
+	</insert>
+
+
+
+
+	<!-- 게시물 삭제  -->
+
+	<delete id="delete" parameterType="map">
+
+		delete
+
+		from board_study
+
+		where seq
+
+		in
+
+		<foreach collection="delchk" item="item" separator=","
+
+			open="(" close=")">
+
+			#{item}
+
+		</foreach>
+
+	</delete>
+
+
+
+
+	<!-- 조회수 증가 -->
+
+	<update id="uphit" parameterType="map">
+
+		update board_study
+
+		set
+
+			view_cnt = #{viewCnt}
+
+		where seq = #{seq}
+
+	</update>
+
+
+
+
+	<!-- 게시물 수정 -->
+
+	<update id="update" parameterType="map">
+
+		update board_study
+
+		set
+
+			mem_name = #{name},
+
+			mem_id = #{id},
+
+			board_subject = #{subject},
+
+			board_content = #{content},
+
+			upt_date = sysdate
+
+		where seq = #{seq}
+
+	</update>
+
+</mapper>
