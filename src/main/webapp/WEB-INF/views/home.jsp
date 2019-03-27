@@ -67,7 +67,7 @@
 	<a href="filedown?dir=C://Users//김님//Desktop//kcj&fileName=pagecss.txt">pagecss</a>
 	<a href="javascript:download('pagecss.txt')">pagecss</a>
 	<a href="javascript:download('새 텍스트 문서.txt')">새 텍스트 문서</a>
-	안녕하세요~
+	안녕하세요~ ㅂㅂ
 	
 </body>
 </html>
